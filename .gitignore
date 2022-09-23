@@ -23,3 +23,6 @@
 
 # Idea project stuff
 .idea
+
+# swap
+.*.sw?
