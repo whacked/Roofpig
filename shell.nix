@@ -13,5 +13,6 @@ pkgs.mkShell {
   shellHook = ''
     activate-yarn-env
     echo-shortcuts ${__curPos.file}
+    alias build='gulp build'
   '';  # join strings with +
 }

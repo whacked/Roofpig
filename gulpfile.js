@@ -2,9 +2,7 @@
 
 var gulp   = require('gulp');
 var gutil  = require('gulp-util');
-var coffee = require('gulp-coffee');
 var concat = require('gulp-concat');
-var cofcon = require('gulp-coffeescript-concat');
 var uglify = require('gulp-uglify');
 
 var dateFormat = require('dateformat');
@@ -25,11 +23,34 @@ gulp.task('clean-build', function() {
 });
 
 gulp.task('build-rp', ['clean-build'], function() {
-  return gulp.src('src/**/*.coffee')
-    .pipe(cofcon('roofpig.coffee'))
-    .pipe(coffee({bare: true}).on('error', gutil.log))
+  return gulp.src([
+        'src/changers/TimedChanger.js',
+        'src/changers/OneChange.js',
+        'src/changers/MoveExecution.js',
+        'src/changers/ConcurrentChangers.js',
+        'src/changers/CameraMovement.js',
+        'src/changers/AlgAnimation.js',
+        'src/utils.js',
+        'src/Css.js',
+        'src/document.js',
+        'src/Layer.js',
+        'src/Cubexp.js',
+        'src/Tweaks.js',
+        'src/Pov.js',
+        'src/Pieces3D.js',
+        'src/Move.js',
+        'src/EventHandlers.js',
+        'src/Dom.js',
+        'src/CompositeMove.js',
+        'src/Alg.js',
+        'src/Colors.js',
+        'src/Config.js',
+        'src/CubeAnimation.js',
+        'src/Camera.js',                              
+    ])
+    .pipe(concat('roofpig.js'))
     .pipe(replace('@@BUILT_WHEN@@', dateFormat(new Date(), "yyyy-mm-dd HH:MM")))
-    .pipe(uglify())
+    // .pipe(uglify())  // failing  SyntaxError: Unexpected token: name (TimedChanger)
     .pipe(gulp.dest(build_dir));
 });
 
@@ -61,16 +82,14 @@ gulp.task('clean-js', function() {
 });
 
 gulp.task('compile-test', ['clean-js'], function() {
-  return gulp.src('test/**/*.coffee')
+  return gulp.src('test/**/*.js')
 //    .pipe(sourcemaps.init())
-    .pipe(coffee({bare: true}).on('error', gutil.log))
 //    .pipe(sourcemaps.write())
     .pipe(gulp.dest(test_js_dir));
 });
 
 gulp.task('compile-src', ['clean-js'], function() {
-  return gulp.src('src/**/*.coffee')
-    .pipe(coffee({bare: true}).on('error', gutil.log))
+  return gulp.src('src/**/*.js')
     .pipe(gulp.dest(js_dir+'src'));
 });
 
