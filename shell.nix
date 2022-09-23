@@ -11,6 +11,7 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
+    activate-yarn-env
     echo-shortcuts ${__curPos.file}
   '';  # join strings with +
 }
