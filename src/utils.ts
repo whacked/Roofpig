@@ -1,4 +1,4 @@
-import * as THREE from '../lib/three.js'
+// import * as THREE from '../lib/three.js'
 
 /*
  * decaffeinate suggestions:
@@ -9,17 +9,17 @@ import * as THREE from '../lib/three.js'
 
 
 // --- Terser THREE.Vector3 ---
-const v3 = (x, y, z) => new THREE.Vector3(x, y, z);
+export const v3 = (x, y, z) => new window['THREE'].Vector3(x, y, z);
 
-const v3_add = (v1, v2) => v1.clone().add(v2);
+export const v3_add = (v1, v2) => v1.clone().add(v2);
 
-const v3_sub = (v1, v2) => v1.clone().sub(v2);
+export const v3_sub = (v1, v2) => v1.clone().sub(v2);
 
-const v3_x = (v, factor) => v.clone().multiplyScalar(factor);
+export const v3_x = (v, factor) => v.clone().multiplyScalar(factor);
 
 // --- Piece names ---
 
-const standardize_name = function (name) {
+export const standardize_name = function (name) {
   const sides: string[] = [name[0], name[1], name[2]];
 
   let result = "";
@@ -31,10 +31,21 @@ const standardize_name = function (name) {
   return result;
 };
 
-const side_name = function (side) {
+export const side_name = function (side) {
   if (side) { return side.name || side; } else { return ""; }
 };
 
 // --- Logging ---
 
-const log_error = text => console.log(`RoofPig error: ${text}`);
+export const log_error = text => console.log(`RoofPig error: ${text}`);
+
+
+
+window['v3'] = v3
+window['v3'] = v3
+window['v3_add'] = v3_add
+window['v3_sub'] = v3_sub
+window['v3_x'] = v3_x
+window['standardize_name'] = standardize_name
+window['side_name'] = side_name
+window['log_error'] = log_error

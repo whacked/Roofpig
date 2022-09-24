@@ -29,7 +29,8 @@ gulp.task('default', function() {
     basedir: '.',
       debug: true,
       entries: [
-          "src/utils.ts"
+          "src/utils.ts",
+          "src/Layer.ts",
       ],
       cache: {},
       packageCache: {},
@@ -37,8 +38,10 @@ gulp.task('default', function() {
     .exclude(require.resolve('./lib/three'))
     .plugin(tsify)
     .bundle()
-    .pipe(source("roofpig.js"))
-    .pipe(gulp.dest("local/build"))
+    // .pipe(source("roofpig.js"))
+    // .pipe(gulp.dest("local/build"))
+    .pipe(source("ts-include.js"))
+    .pipe(gulp.dest("src"))
 
   return tsProject.src().pipe(tsProject())
     .js
@@ -51,8 +54,12 @@ gulp.task('clean-build', function() {
 
 gulp.task('build-rp', ['clean-build'], function() {
   return gulp.src([
+      /*
       'src/utils.js',
       'src/Layer.js',
+      */
+      'src/ts-include.js',
+
       'src/changers/TimedChanger.js',
       'src/changers/CameraMovement.js',
       'src/changers/MoveExecution.js',
