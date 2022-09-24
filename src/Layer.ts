@@ -87,5 +87,3 @@ export const Layer = (function () {
   Layer.initClass();
   return Layer;
 })();
-
-window['Layer'] = Layer

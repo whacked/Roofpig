@@ -58,5 +58,3 @@ export class MoveExecution extends TimedChanger {
     })();
   }
 }
-
-window['MoveExecution'] = MoveExecution

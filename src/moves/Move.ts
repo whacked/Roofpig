@@ -116,5 +116,3 @@ export const Move = (function () {
   Move.initClass();
   return Move;
 })();
-
-window['Move'] = Move

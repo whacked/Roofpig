@@ -9,7 +9,6 @@
 import { Css } from "./Css";
 import { CubeAnimation } from "./CubeAnimation";
 
-const $ = window['$']  // FIXME
 
 $(document).ready(function () {
   console.log("Roofpig version 1.5 pre release. ♇ (@@BUILT_WHEN@@). Expecting jQuery 3.1.1 and Three.js 71.");

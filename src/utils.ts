@@ -37,15 +37,6 @@ export const side_name = function (side): string {
 
 // --- Logging ---
 
-export const log_error = text => console.log(`RoofPig error: ${text}`);
-
-
-
-window['v3'] = v3
-window['v3'] = v3
-window['v3_add'] = v3_add
-window['v3_sub'] = v3_sub
-window['v3_x'] = v3_x
-window['standardize_name'] = standardize_name
-window['side_name'] = side_name
-window['log_error'] = log_error
+export function log_error(text: string) {
+  console.log(`RoofPig error: ${text}`);
+}

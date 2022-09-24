@@ -30,5 +30,3 @@ export class ConcurrentChangers {
     return true;
   }
 }
-
-window['ConcurrentChangers'] = ConcurrentChangers

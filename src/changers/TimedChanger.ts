@@ -63,5 +63,3 @@ export class TimedChanger { // Base class
     return x * x * (2 - (x * x));
   }
 }
-
-window['TimedChanger'] = TimedChanger

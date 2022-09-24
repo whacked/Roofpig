@@ -165,5 +165,3 @@ export class Alg {
     return `${current}/${total}`;
   }
 }
-
-window['Alg'] = Alg

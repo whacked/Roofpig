@@ -31,5 +31,3 @@ export class CameraMovement extends TimedChanger {
     return this.camera.to_position();
   }
 }
-
-window['CameraMovement'] = CameraMovement
