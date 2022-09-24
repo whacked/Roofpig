@@ -12,37 +12,72 @@ import { Colors } from "./Colors";
 import { log_error } from "./utils";
 import { Alg } from './moves/Alg'
 
-let ALG, ALGDISPLAY, BASE, COLORED, COLORS, FLAGS, HOVER, POV, SETUPMOVES, SOLVED, SPEED, TWEAKS;
+
+enum ConfigProperty {
+  ALG = 'alg',
+  BASE = 'base',
+  ALGDISPLAY = 'algdisplay',
+  COLORED = 'colored',
+  COLORS = "colors",
+  FLAGS = 'flags',
+  HOVER = 'hover',
+  POV = 'pov',
+  SETUPMOVES = 'setupmoves',
+  SOLVED = 'solved',
+  SPEED = 'speed',
+  TWEAKS = 'tweaks',
+}
+
+type ConfigRecord = { [P in ConfigProperty]?: any };
+
+export enum Flags {
+  STARTSOLVED = 'startsolved',
+  CANVAS = 'canvas',
+  SHOWALG = 'showalg',
+}
+
+export interface AlgDisplay {
+  fancy2s: boolean,
+  rotations: boolean,
+  Zcode: "2" | "2'" | "Z",
+}
+
 export class Config {
-  raw_input: {};
+  raw_input: ConfigRecord;
   base: Config | { raw(): void; };
   alg: any;
   algdisplay: {};
-  colors: any;
-  flags: any;
+  colors: Colors;
+  flags: string;
   hover: any;
   pov: any;
   setup: any;
   speed: any;
   constructor(config_string) {
     this.raw_input = Config._parse(config_string);
-    this.base = this.base_config(this.raw_input[BASE], config_string);
+    this.base = this.base_config(this.raw_input[ConfigProperty.BASE], config_string);
 
-    this.alg = this.raw(ALG);
+    this.alg = this.raw(ConfigProperty.ALG);
     this.algdisplay = this._alg_display();
-    this.colors = new Colors(Alg.pov_from(this.alg), this.raw(COLORED), this.raw(SOLVED), this.raw(TWEAKS), this.raw(COLORS));
-    this.flags = this.raw(FLAGS);
+    this.colors = new Colors(
+      Alg.pov_from(this.alg),
+      this.raw(ConfigProperty.COLORED),
+      this.raw(ConfigProperty.SOLVED),
+      this.raw(ConfigProperty.TWEAKS),
+      this.raw(ConfigProperty.COLORS)
+    );
+    this.flags = this.raw(ConfigProperty.FLAGS);
     this.hover = this._hover();
-    this.pov = this.raw(POV, "Ufr");
-    this.setup = this.raw(SETUPMOVES);
-    this.speed = this.raw(SPEED, 400);
+    this.pov = this.raw(ConfigProperty.POV, "Ufr");
+    this.setup = this.raw(ConfigProperty.SETUPMOVES);
+    this.speed = this.raw(ConfigProperty.SPEED, 400);
   }
 
-  flag(name) {
+  flag(name: string) {
     return this.flags.indexOf(name) > -1;
   }
 
-  raw(name, default_value: string | number = "") {
+  raw(name: ConfigProperty, default_value: string | number = "") {
     return this.raw_input[name] || this.base.raw(name) || default_value;
   }
 
@@ -61,7 +96,7 @@ export class Config {
   }
 
   _hover() {
-    const raw_hover = this.raw(HOVER, "near");
+    const raw_hover = this.raw(ConfigProperty.HOVER, "near");
     switch (raw_hover) {
       case 'none': return 1.0;
       case 'near': return 2.0;
@@ -71,9 +106,9 @@ export class Config {
     }
   }
 
-  _alg_display() {
-    const ad = this.raw(ALGDISPLAY);
-    const result = {
+  _alg_display(): AlgDisplay {
+    const ad = this.raw(ConfigProperty.ALGDISPLAY);
+    const result: AlgDisplay = {
       fancy2s: ad.indexOf('fancy2s') > -1,
       rotations: ad.indexOf('rotations') > -1,
       Zcode: "2",
@@ -83,26 +118,23 @@ export class Config {
     return result;
   }
 
-  static _parse(config_string) {
+  static _parse(config_string: string): ConfigRecord {
     if (!config_string) { return {}; }
 
-    const result = {};
+    const result: ConfigRecord = {};
     for (let conf of config_string.split("|")) {
+
       const eq_pos = conf.indexOf("=");
       const key = conf.substring(0, eq_pos).trim();
       const value = conf.substring(eq_pos + 1).trim();
-      result[key] = value;
 
-      if (PROPERTIES.indexOf(key) === -1) {
+      if (!(key in ConfigProperty)) {
         log_error(`Unknown config parameter '${key}' ignored`);
+        continue
       }
+      result[key] = value;
     }
 
     return result;
   }
 }
-
-var PROPERTIES = [
-  (ALG = 'alg'), (BASE = 'base'), (ALGDISPLAY = 'algdisplay'), (COLORED = 'colored'), (COLORS = "colors"), (FLAGS = 'flags'),
-  (HOVER = 'hover'), (POV = 'pov'), (SETUPMOVES = 'setupmoves'), (SOLVED = 'solved'), (SPEED = 'speed'), (TWEAKS = 'tweaks')
-];

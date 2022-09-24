@@ -16,7 +16,7 @@
 
 import { Camera } from "./Camera";
 import { OneChange } from "./changers/OneChange";
-import { Config } from "./Config";
+import { Config, Flags } from "./Config";
 import { Dom } from "./Dom";
 import { EventHandlers } from "./EventHandlers";
 import { Alg } from "./moves/Alg";
@@ -35,7 +35,7 @@ export class CubeAnimation {
   static webgl_browser: boolean;
   static canvas_browser: boolean;
   id: any;
-  config: any;
+  config: Config;
   renderer: any;
   dom: any;
   scene: any;
@@ -101,7 +101,7 @@ export class CubeAnimation {
 
     this.config = new Config(roofpig_div.data('config'));
 
-    const use_canvas = this.config.flag('canvas') || !CubeAnimation.webgl_browser || (CubeAnimation.webgl_cubes >= 16);
+    const use_canvas = this.config.flag(Flags.CANVAS) || !CubeAnimation.webgl_browser || (CubeAnimation.webgl_cubes >= 16);
     if (use_canvas) {
       this.renderer = new THREE.CanvasRenderer({ alpha: true }); // alpha -> transparent
     } else {
@@ -109,7 +109,7 @@ export class CubeAnimation {
       this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     }
 
-    this.dom = new Dom(this.id, roofpig_div, this.renderer, this.has_alg(), this.config.flag('showalg'), this.user_controlled());
+    this.dom = new Dom(this.id, roofpig_div, this.renderer, this.has_alg(), this.config.flag(Flags.SHOWALG), this.user_controlled());
     this.scene = new THREE.Scene();
     this.world3d = {
       camera: new Camera(this.config.hover, this.config.pov),
@@ -119,7 +119,7 @@ export class CubeAnimation {
     this.alg = new Alg(this.config.alg, this.world3d, this.config.algdisplay, this.config.speed, this.dom);
 
     if (this.config.setup) { new Alg(this.config.setup, this.world3d).to_end(); }
-    if (!this.config.flag('startsolved')) { this.alg.mix(); }
+    if (!this.config.flag(Flags.STARTSOLVED)) { this.alg.mix(); }
 
     if (CubeAnimation.count() === 1) {
       EventHandlers.set_focus(this);
