@@ -2,10 +2,13 @@
 
 var gulp   = require('gulp');
 var gutil  = require('gulp-util');
-var coffee = require('gulp-coffee');
 var concat = require('gulp-concat');
-var cofcon = require('gulp-coffeescript-concat');
 var uglify = require('gulp-uglify');
+
+var ts         = require('gulp-typescript');
+var source     = require('vinyl-source-stream');
+var tsify      = require('tsify');
+var browserify = require('browserify');
 
 var dateFormat = require('dateformat');
 var del        = require('del');
@@ -18,24 +21,78 @@ var rp_js_file = 'roofpig.js';
 var extras_file = '3extras.js';
 var release_file = 'roofpig_and_three.min.js';
 
+var tsProject = ts.createProject("tsconfig.json")
+
 // ------------- BUILD -----
+gulp.task('default', function() {
+  return browserify({
+    basedir: '.',
+      debug: true,
+      entries: [
+          "src/utils.ts",
+          "src/Layer.ts",
+          'src/changers/TimedChanger.ts',
+          'src/changers/CameraMovement.ts',
+          'src/changers/MoveExecution.ts',
+          'src/moves/SingleMove.ts',
+          'src/moves/Move.ts',
+          'src/changers/ConcurrentChangers.ts',
+          'src/moves/CompositeMove.ts',
+          'src/changers/AlgAnimation.ts',
+          'src/moves/Alg.ts',
+          'src/changers/OneChange.ts',
+
+          'src/Css.ts',
+          'src/document.ts',
+          'src/Cubexp.ts',
+          'src/Tweaks.ts',
+          'src/PovTracker.ts',
+          'src/Pieces3D.ts',
+          'src/EventHandlers.ts',
+          'src/Dom.ts',
+          'src/Colors.ts',
+          'src/Config.ts',
+          'src/CubeAnimation.ts',
+          'src/Camera.ts',
+      ],
+      cache: {},
+      packageCache: {},
+  })
+    .exclude(require.resolve('./lib/three'))
+    .plugin(tsify)
+    .bundle()
+    // .pipe(source("roofpig.js"))
+    // .pipe(gulp.dest("local/build"))
+    .pipe(source("ts-include.js"))
+    .pipe(gulp.dest("src"))
+
+  return tsProject.src().pipe(tsProject())
+    .js
+    .pipe(gulp.dest(build_dir));
+});
 
 gulp.task('clean-build', function() {
   return del(build_dir +'**/*');
 });
 
-gulp.task('build-rp', ['clean-build'], function() {
-  return gulp.src('src/**/*.coffee')
-    .pipe(cofcon('roofpig.coffee'))
-    .pipe(coffee({bare: true}).on('error', gutil.log))
+gulp.task('build-rp', ['clean-build', 'default'], function() {
+  return gulp.src([
+      /*
+      'src/utils.js',
+      'src/Layer.js',
+      */
+      'src/ts-include.js',
+
+    ])
+    .pipe(concat('roofpig.js'))
     .pipe(replace('@@BUILT_WHEN@@', dateFormat(new Date(), "yyyy-mm-dd HH:MM")))
-    .pipe(uglify())
+    // .pipe(uglify())
     .pipe(gulp.dest(build_dir));
 });
 
 gulp.task('build-3x', ['clean-build'], function() {
   return gulp.src(['lib/Projector.js', 'lib/CanvasRenderer.js'])
-    .pipe(uglify())
+    // .pipe(uglify())
     .pipe(concat(extras_file))
     .pipe(gulp.dest(build_dir));
 });
@@ -61,16 +118,14 @@ gulp.task('clean-js', function() {
 });
 
 gulp.task('compile-test', ['clean-js'], function() {
-  return gulp.src('test/**/*.coffee')
+  return gulp.src('test/**/*.js')
 //    .pipe(sourcemaps.init())
-    .pipe(coffee({bare: true}).on('error', gutil.log))
 //    .pipe(sourcemaps.write())
     .pipe(gulp.dest(test_js_dir));
 });
 
 gulp.task('compile-src', ['clean-js'], function() {
-  return gulp.src('src/**/*.coffee')
-    .pipe(coffee({bare: true}).on('error', gutil.log))
+  return gulp.src('src/**/*.js')
     .pipe(gulp.dest(js_dir+'src'));
 });
 

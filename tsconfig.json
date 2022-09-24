@@ -1,0 +1,8 @@
+{
+  "files": ["src/utils.ts"],
+  "compilerOptions": {
+    "allowJs": true,
+    "target": "es2016",
+    "rootDir": "."
+  }
+}

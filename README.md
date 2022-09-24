@@ -1,6 +1,6 @@
-# Roofpig
+# Roofpig (TypeScript)
 
-Roofpig is an animated, programmable and interactive Rubik's Cube for the modern web. It uses WebGL or plain Canvas (by way of [three.js](http://threejs.org/)) and is written in CoffeeScript. You can see it in use on http://lar5.com/cube/, or [play with demos](http://jsfiddle.net/Lar5/86L4C/). 
+Roofpig is an animated, programmable and interactive Rubik's Cube for the modern web. It uses WebGL or plain Canvas (by way of [three.js](http://threejs.org/)). The [original version](https://github.com/larspetrus/Roofpig) is written in CoffeeScript; this version is based off of its latest branch (v1.5) and uses TypeScript.
 
 It should work on most [any modern browser](http://caniuse.com/canvas).
 
