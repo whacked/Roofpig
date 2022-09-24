@@ -6,7 +6,12 @@
  */
 //= require TimedChanger
 
+import { TimedChanger } from "./TimedChanger";
+
 class CameraMovement extends TimedChanger {
+  camera: any;
+  angle_to_turn: number;
+  axis: any;
   constructor(camera, axis, angle_to_turn, turn_time, animate) {
     super(turn_time);
     this.camera = camera;
@@ -26,3 +31,5 @@ class CameraMovement extends TimedChanger {
     return this.camera.to_position();
   }
 }
+
+window['CameraMovement'] = CameraMovement

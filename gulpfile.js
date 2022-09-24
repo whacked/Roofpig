@@ -32,6 +32,8 @@ gulp.task('default', function() {
           "src/utils.ts",
           "src/Layer.ts",
           'src/changers/TimedChanger.ts',
+          'src/changers/CameraMovement.ts',
+          'src/changers/MoveExecution.ts',
       ],
       cache: {},
       packageCache: {},
@@ -61,8 +63,6 @@ gulp.task('build-rp', ['clean-build', 'default'], function() {
       */
       'src/ts-include.js',
 
-      'src/changers/CameraMovement.js',
-      'src/changers/MoveExecution.js',
       'src/moves/SingleMove.js',
       'src/moves/Move.js',
       'src/changers/ConcurrentChangers.js',

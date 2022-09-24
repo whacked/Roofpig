@@ -9,7 +9,16 @@
  */
 //= require TimedChanger
 
+import { TimedChanger } from "./TimedChanger";
+
+
+const THREE = window['THREE']
+
+
 class MoveExecution extends TimedChanger {
+  pieces: any[];
+  axis: any;
+  angle_to_turn: number;
   constructor(pieces, axis, angle_to_turn, turn_time, animate) {
     super(turn_time);
     this.pieces = pieces;
@@ -50,3 +59,4 @@ class MoveExecution extends TimedChanger {
   }
 }
 
+window['MoveExecution'] = MoveExecution
