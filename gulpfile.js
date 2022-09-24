@@ -4,7 +4,11 @@ var gulp   = require('gulp');
 var gutil  = require('gulp-util');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
-var ts     = require('gulp-typescript');
+
+var ts         = require('gulp-typescript');
+var source     = require('vinyl-source-stream');
+var tsify      = require('tsify');
+var browserify = require('browserify');
 
 var dateFormat = require('dateformat');
 var del        = require('del');
@@ -20,8 +24,22 @@ var release_file = 'roofpig_and_three.min.js';
 var tsProject = ts.createProject("tsconfig.json")
 
 // ------------- BUILD -----
-
 gulp.task('default', function() {
+  return browserify({
+    basedir: '.',
+      debug: true,
+      entries: [
+          "src/utils.ts"
+      ],
+      cache: {},
+      packageCache: {},
+  })
+    .exclude(require.resolve('./lib/three'))
+    .plugin(tsify)
+    .bundle()
+    .pipe(source("roofpig.js"))
+    .pipe(gulp.dest("local/build"))
+
   return tsProject.src().pipe(tsProject())
     .js
     .pipe(gulp.dest(build_dir));
