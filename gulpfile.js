@@ -31,6 +31,7 @@ gulp.task('default', function() {
       entries: [
           "src/utils.ts",
           "src/Layer.ts",
+          'src/changers/TimedChanger.ts',
       ],
       cache: {},
       packageCache: {},
@@ -52,7 +53,7 @@ gulp.task('clean-build', function() {
   return del(build_dir +'**/*');
 });
 
-gulp.task('build-rp', ['clean-build'], function() {
+gulp.task('build-rp', ['clean-build', 'default'], function() {
   return gulp.src([
       /*
       'src/utils.js',
@@ -60,7 +61,6 @@ gulp.task('build-rp', ['clean-build'], function() {
       */
       'src/ts-include.js',
 
-      'src/changers/TimedChanger.js',
       'src/changers/CameraMovement.js',
       'src/changers/MoveExecution.js',
       'src/moves/SingleMove.js',

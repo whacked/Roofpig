@@ -15,7 +15,12 @@
 
 
 
-class TimedChanger { // Base class
+export class TimedChanger { // Base class
+  duration: number;
+  start_time: number;
+  last_time: number;
+  private _finished: boolean;
+
   constructor(duration) {
     this.duration = duration;
     this.start_time = (new Date()).getTime();
@@ -44,6 +49,9 @@ class TimedChanger { // Base class
     return this._finished;
   }
 
+  do_change(completion_diff) { }  // abstract method
+  _realign() { }  // abstract method
+
   _make_change(to_time) {
     this.do_change(this._ease(to_time) - this._ease(this.last_time));
     return this.last_time = to_time;
@@ -55,3 +63,5 @@ class TimedChanger { // Base class
     return x * x * (2 - (x * x));
   }
 }
+
+window['TimedChanger'] = TimedChanger
