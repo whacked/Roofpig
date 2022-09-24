@@ -148,7 +148,9 @@ export const Pieces3D = function () {
     _new_piece(x_side, y_side, z_side) {
       const new_piece = new THREE.Object3D();
       new_piece.name = standardize_name(x_side.name + y_side.name + z_side.name);
+      // @ts-ignore
       new_piece.sticker_locations = new_piece.name.split('');
+      // @ts-ignore
       new_piece.middle = v3(2 * x_side.normal.x, 2 * y_side.normal.y, 2 * z_side.normal.z);
       return new_piece;
     }
