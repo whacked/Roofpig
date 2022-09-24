@@ -96,9 +96,11 @@ export const Move = (function () {
       }
     }
 
-    static turn_code(turns, rotation) {
-      if (rotation == null) { rotation = false; }
-      return { true: { 1: '>', 2: '>>', '-1': '<', '-2': '<<' }, false: { 1: '', 2: '2', '-1': "'", '-2': 'Z' } }[rotation][turns];
+    static turn_code(turns, rotation = false) {
+      const turnMapping = rotation
+        ? { 1: '>', 2: '>>', '-1': '<', '-2': '<<' }
+        : { 1: '', 2: '2', '-1': "'", '-2': 'Z' }
+      return turnMapping[turns]
     }
 
     static displayify(move_text, algdisplay) {

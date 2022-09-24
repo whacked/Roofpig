@@ -8,13 +8,23 @@
  */
 //= require <utils.coffee>
 
+import { standardize_name, side_name, log_error } from './utils'
+
+interface FIXME_Result {
+  type: string
+  type_filter: string
+  piece: string
+  sides: string
+}
+
 //Named in flawed analogy with Regexp
-var Cubexp = (function() {
+export const Cubexp = (function () {
   let PIECE_NAMES = undefined;
-  Cubexp = class Cubexp {
+  let Cubexp = class Cubexp {
+    matches: {};
     static initClass() {
-  
-      PIECE_NAMES = ['B','BL','BR','D','DB','DBL','DBR','DF','DFL','DFR','DL','DR','F','FL','FR','L','R','U','UB','UBL','UBR','UF','UFL','UFR','UL','UR'];
+
+      PIECE_NAMES = ['B', 'BL', 'BR', 'D', 'DB', 'DBL', 'DBR', 'DF', 'DFL', 'DFR', 'DL', 'DR', 'F', 'FL', 'FR', 'L', 'R', 'U', 'UB', 'UBL', 'UBR', 'UF', 'UFL', 'UFR', 'UL', 'UR'];
     }
 
     constructor(cubexp_string) {
@@ -90,19 +100,24 @@ var Cubexp = (function() {
       return result;
     }
 
-    _add_match(piece, type_filter, sides) {
+    _add_match(piece, type_filter, sides?) {
       if (sides == null) { sides = piece; }
-      const piece_type = 'mec'[piece.length-1];
+      const piece_type = 'mec'[piece.length - 1];
       if (!type_filter || (type_filter.indexOf(piece_type) > -1)) {
         return Array.from(sides.split('')).map((side) =>
           (this.matches[piece][side] = true));
       }
     }
 
-    _parse(expression) {
+    _parse(expression): FIXME_Result {
       let exp;
-      const result = {};
-      [exp, result.type_filter] = Array.from(expression.split('/'));
+      const result: FIXME_Result = {
+        type: null,
+        piece: null,
+        type_filter: null,
+        sides: null,
+      };
+      [exp, result.type_filter] = expression.split('/');
       result.piece = standardize_name(exp.toUpperCase());
 
       const last_char = exp[exp.length - 1];

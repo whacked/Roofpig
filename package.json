@@ -26,6 +26,7 @@
     "graceful-fs": "^4.2.10"
   },
   "devDependencies": {
+    "@types/jquery": "^3.5.14",
     "browserify": "^17.0.0",
     "chai": "3.5.0",
     "dateformat": "1.0.12",

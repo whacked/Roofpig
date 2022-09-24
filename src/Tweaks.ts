@@ -9,15 +9,20 @@
 //= require Layer
 //= require Cubexp
 
-class Tweaks {
+import { Cubexp } from "./Cubexp";
+import { side_name, standardize_name } from "./utils";
+import { Layer } from './Layer'
+
+export class Tweaks {
+  tweaks: {};
 
   constructor(expressions) {
     this.tweaks = {};
     if (!expressions) { return; }
 
-    for (let expression of Array.from(expressions.split(" "))) {
+    for (let expression of expressions.split(" ")) {
       var side;
-      const [what, where] = Array.from(expression.split(':'));
+      const [what, where] = expression.split(':');
       if (!where) { continue; }
 
       if (what.length === 1) {

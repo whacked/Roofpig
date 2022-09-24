@@ -10,12 +10,21 @@
 //= require Cubexp
 //= require Tweaks
 
-var Colors = (function() {
+import { Cubexp } from "./Cubexp";
+import { Layer } from "./Layer";
+import { Tweaks } from "./Tweaks";
+import { log_error } from "./utils";
+
+export const Colors = (function () {
   let DEFAULT_COLORS = undefined;
-  Colors = class Colors {
+  let Colors = class Colors {
+    colored: any;
+    solved: any;
+    tweaks: any;
+    side_colors: { R: any; L: any; F: any; B: any; U: any; D: any; solved: string; ignored: string; cube: string; };
     static initClass() {
-  
-      DEFAULT_COLORS = {g:'#0d0', b:'#07f', r:'red', o:'orange', y:'yellow', w:'#eee'};
+
+      DEFAULT_COLORS = { g: '#0d0', b: '#07f', r: 'red', o: 'orange', y: 'yellow', w: '#eee' };
     }
 
     constructor(pov, colored, solved, tweaks, overrides) {
@@ -27,7 +36,7 @@ var Colors = (function() {
     }
 
     to_draw(piece_name, side) {
-      const result = { hovers: false, color: this.of(side) };
+      const result = { hovers: false, color: this.of(side), x_color: undefined };
 
       if (this.solved.matches_sticker(piece_name, side)) {
         result.color = this.of('solved');
@@ -41,7 +50,7 @@ var Colors = (function() {
         result.hovers = true;
         switch (tweak) {
           case 'X': case 'x':
-            result.x_color = {X: 'black', x: 'white'}[tweak];
+            result.x_color = { X: 'black', x: 'white' }[tweak];
             break;
           default:
             if (Layer.by_name(tweak)) {
@@ -63,11 +72,11 @@ var Colors = (function() {
     }
     static _set_colors(config_colors, h2c_map) {
       const dc = DEFAULT_COLORS; // shorten name for readability
-      const result = {R:dc.g, L:dc.b, F:dc.r, B:dc.o, U:dc.y, D:dc.w, solved:'#444', ignored:'#888', cube:'black'};
+      const result = { R: dc.g, L: dc.b, F: dc.r, B: dc.o, U: dc.y, D: dc.w, solved: '#444', ignored: '#888', cube: 'black' };
 
-      for (let override of Array.from(config_colors.split(' '))) {
-        let [type, color] = Array.from(override.split(':'));
-        type = {s:'solved', i:'ignored', c:'cube'}[type] || type;
+      for (let override of config_colors.split(' ')) {
+        let [type, color] = override.split(':');
+        type = { s: 'solved', i: 'ignored', c: 'cube' }[type] || type;
         result[type] = DEFAULT_COLORS[color] || color;
       }
 

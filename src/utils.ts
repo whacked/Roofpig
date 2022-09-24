@@ -31,7 +31,7 @@ export const standardize_name = function (name) {
   return result;
 };
 
-export const side_name = function (side) {
+export const side_name = function (side): string {
   if (side) { return side.name || side; } else { return ""; }
 };
 

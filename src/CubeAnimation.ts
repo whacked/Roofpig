@@ -14,7 +14,36 @@
 //= require Pieces3D
 //= require OneChange
 
-class CubeAnimation {
+import { Camera } from "./Camera";
+import { OneChange } from "./changers/OneChange";
+import { Config } from "./Config";
+import { Dom } from "./Dom";
+import { EventHandlers } from "./EventHandlers";
+import { Alg } from "./moves/Alg";
+import { Move } from "./moves/Move";
+import { Pieces3D } from "./Pieces3D";
+import { PovTracker } from "./PovTracker";
+import { log_error } from "./utils";
+
+
+const THREE = window['THREE'] // FIXME
+
+export class CubeAnimation {
+  static by_id: any;
+  static last_id: number;
+  static webgl_cubes: number;
+  static webgl_browser: boolean;
+  static canvas_browser: boolean;
+  id: any;
+  config: any;
+  renderer: any;
+  dom: any;
+  scene: any;
+  world3d: { camera: any; pieces: any; };
+  alg: any;
+  changers: {};
+  now_solving: boolean;
+  pov: any;
   static initClass() {
     this.last_id = 0;
     this.by_id = {};
@@ -22,7 +51,7 @@ class CubeAnimation {
   }
 
   static initialize() {
-    CubeAnimation.webgl_browser = (function() {
+    CubeAnimation.webgl_browser = (function () {
       try {
         return !!window.WebGLRenderingContext && !!document.createElement("canvas").getContext("experimental-webgl");
       } catch (e) {
@@ -62,48 +91,48 @@ class CubeAnimation {
   constructor(roofpig_div) {
     if (!CubeAnimation.canvas_browser) {
       roofpig_div.html("This browser does not support <a href='http://khronos.org/webgl/wiki/Getting_a_WebGL_Implementation'>WebGL</a>.<p/> Find out how to get it <a href='http://get.webgl.org/'>here</a>.");
-      roofpig_div.css({background: '#f66'});
+      roofpig_div.css({ background: '#f66' });
       return;
     }
 
-    try {
-      this.id = (CubeAnimation.last_id += 1);
-      CubeAnimation.by_id[this.id] = this;
+    // try {
+    this.id = (CubeAnimation.last_id += 1);
+    CubeAnimation.by_id[this.id] = this;
 
-      this.config = new Config(roofpig_div.data('config'));
+    this.config = new Config(roofpig_div.data('config'));
 
-      const use_canvas = this.config.flag('canvas') || !CubeAnimation.webgl_browser || (CubeAnimation.webgl_cubes >= 16);
-      if (use_canvas) {
-        this.renderer = new THREE.CanvasRenderer({alpha: true}); // alpha -> transparent
-      } else {
-        CubeAnimation.webgl_cubes += 1;
-        this.renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
-      }
-
-      this.dom = new Dom(this.id, roofpig_div, this.renderer, this.has_alg(), this.config.flag('showalg'), this.user_controlled());
-      this.scene = new THREE.Scene();
-      this.world3d = {
-        camera: new Camera(this.config.hover, this.config.pov),
-        pieces: new Pieces3D(this.scene, this.config.hover, this.config.colors, use_canvas)
-      };
-
-      this.alg = new Alg(this.config.alg, this.world3d, this.config.algdisplay, this.config.speed, this.dom);
-
-      if (this.config.setup) { new Alg(this.config.setup, this.world3d).to_end(); }
-      if (!this.config.flag('startsolved')) { this.alg.mix(); }
-
-      if (CubeAnimation.count() === 1) {
-        EventHandlers.set_focus(this);
-      }
-
-      this.changers = {};
-      this.animate(true);
-
-      EventHandlers.initialize();
-    } catch (e) {
-      roofpig_div.html(e.message);
-      roofpig_div.css({background: '#f66'});
+    const use_canvas = this.config.flag('canvas') || !CubeAnimation.webgl_browser || (CubeAnimation.webgl_cubes >= 16);
+    if (use_canvas) {
+      this.renderer = new THREE.CanvasRenderer({ alpha: true }); // alpha -> transparent
+    } else {
+      CubeAnimation.webgl_cubes += 1;
+      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     }
+
+    this.dom = new Dom(this.id, roofpig_div, this.renderer, this.has_alg(), this.config.flag('showalg'), this.user_controlled());
+    this.scene = new THREE.Scene();
+    this.world3d = {
+      camera: new Camera(this.config.hover, this.config.pov),
+      pieces: new Pieces3D(this.scene, this.config.hover, this.config.colors, use_canvas)
+    };
+
+    this.alg = new Alg(this.config.alg, this.world3d, this.config.algdisplay, this.config.speed, this.dom);
+
+    if (this.config.setup) { new Alg(this.config.setup, this.world3d).to_end(); }
+    if (!this.config.flag('startsolved')) { this.alg.mix(); }
+
+    if (CubeAnimation.count() === 1) {
+      EventHandlers.set_focus(this);
+    }
+
+    this.changers = {};
+    this.animate(true);
+
+    EventHandlers.initialize();
+    // } catch (e) {
+    //   roofpig_div.html(e.message);
+    //   roofpig_div.css({ background: '#f66' });
+    // }
   }
 
   has_alg() {
@@ -119,7 +148,7 @@ class CubeAnimation {
   }
 
   reset() {
-    return this.add_changer('pieces', new OneChange( () => this.world3d.pieces.reset()));
+    return this.add_changer('pieces', new OneChange(() => this.world3d.pieces.reset()));
   }
 
   starting_solve() {
@@ -135,9 +164,8 @@ class CubeAnimation {
     return this.dom.div.remove();
   }
 
-  animate(first_time) {  // called for each redraw
+  animate(first_time = false) {  // called for each redraw
     let any_change;
-    if (first_time == null) { first_time = false; }
     const now = (new Date()).getTime();
 
     for (let category of Object.keys(this.changers || {})) {
@@ -166,11 +194,11 @@ class CubeAnimation {
     const move = Move.make(hand_code, this.world3d, 200);
     this.pov.track(move);
     if (this.now_solving) {
-      document.dispatchEvent(new CustomEvent('cube_move', {detail: {move: hand_code}}));
+      document.dispatchEvent(new CustomEvent('cube_move', { detail: { move: hand_code } }));
     }
     this.add_changer('pieces', move.show_do());
     if (this.solved() && this.now_solving) {
-      document.dispatchEvent(new CustomEvent('cube_solved', {detail: {'id': this.id}}));
+      document.dispatchEvent(new CustomEvent('cube_solved', { detail: { 'id': this.id } }));
       return this.now_solving = false;
     }
   }
@@ -180,7 +208,7 @@ class CubeAnimation {
     let changer;
     switch (name) {
       case 'play':
-        changer = !shift ? this.alg.play(this.world3d) : new OneChange( () => this.alg.to_end(this.world3d));
+        changer = !shift ? this.alg.play(this.world3d) : new OneChange(() => this.alg.to_end(this.world3d));
         break;
       case 'pause':
         this.alg.stop();
@@ -192,7 +220,7 @@ class CubeAnimation {
         if (!this.alg.at_start()) { changer = this.alg.prev_move().show_undo(this.world3d); }
         break;
       case 'reset':
-        changer = new OneChange( () => this.alg.to_start(this.world3d));
+        changer = new OneChange(() => this.alg.to_start(this.world3d));
         break;
     }
 

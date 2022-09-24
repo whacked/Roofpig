@@ -41,6 +41,19 @@ gulp.task('default', function() {
           'src/changers/AlgAnimation.ts',
           'src/moves/Alg.ts',
           'src/changers/OneChange.ts',
+
+          'src/Css.ts',
+          'src/document.ts',
+          'src/Cubexp.ts',
+          'src/Tweaks.ts',
+          'src/PovTracker.ts',
+          'src/Pieces3D.ts',
+          'src/EventHandlers.ts',
+          'src/Dom.ts',
+          'src/Colors.ts',
+          'src/Config.ts',
+          'src/CubeAnimation.ts',
+          'src/Camera.ts',
       ],
       cache: {},
       packageCache: {},
@@ -70,18 +83,6 @@ gulp.task('build-rp', ['clean-build', 'default'], function() {
       */
       'src/ts-include.js',
 
-      'src/Css.js',
-      'src/document.js',
-      'src/Cubexp.js',
-      'src/Tweaks.js',
-      'src/PovTracker.js',
-      'src/Pieces3D.js',
-      'src/EventHandlers.js',
-      'src/Dom.js',
-      'src/Colors.js',
-      'src/Config.js',
-      'src/CubeAnimation.js',
-      'src/Camera.js',
     ])
     .pipe(concat('roofpig.js'))
     .pipe(replace('@@BUILT_WHEN@@', dateFormat(new Date(), "yyyy-mm-dd HH:MM")))

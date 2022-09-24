@@ -4,18 +4,19 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 
-var Css = (function() {
+export const Css = (function () {
   let light = undefined;
   let dark = undefined;
   let shadow = undefined;
-  Css = class Css {
+  let Css = class Css {
+    static CODE: string;
     static initClass() {
       light = "#ededed";
-      dark  = "#bbb";
-      shadow= "#ffffff";
-  
+      dark = "#bbb";
+      shadow = "#ffffff";
+
       this.CODE =
-      `\
+        `\
 <style>
 .roofpig-button {
   font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;

@@ -14,17 +14,18 @@
 //
 // This class keeps track of and maps between these POVs
 
-class PovTracker {
-  constructor(moves) {
+export class PovTracker {
+  map: { B: string; D: string; F: string; L: string; R: string; U: string; };
+  constructor(moves?) {
     this.map = PovTracker.start_map();
     if (moves) { this.track(moves); }
   }
 
   static start_map() {
-    return {B: 'B', D: 'D', F: 'F',L: 'L', R: 'R', U: 'U'};
+    return { B: 'B', D: 'D', F: 'F', L: 'L', R: 'R', U: 'U' };
   }
 
-  track(moves) {
+  track(moves: any[]) {  // FIXME
     if (!Array.isArray(moves)) { moves = [moves]; }
     return Array.from(moves).map((move) =>
       move.track_pov(this.map));
@@ -49,7 +50,7 @@ class PovTracker {
 
   _case_map(map, code) {
     if (!code) { return code; }
-    return (Array.from(code.split('')).map((char) => map[char] || __guard__(map[char.toUpperCase()], x => x.toLowerCase()) || char)).join('');
+    return (code.split('').map((char) => this.map[char] || __guard__(map[char.toUpperCase()], x => x.toLowerCase()) || char)).join('');
   }
 }
 

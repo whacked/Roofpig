@@ -8,8 +8,12 @@
  * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-//= require Layer
-//= require utils
+
+const THREE = window['THREE']
+
+
+import { standardize_name, v3, v3_add, v3_sub, v3_x } from "./utils";
+import { Layer } from './Layer'
 
 // pieces.UFR is the 3D model for the UFR piece
 //
@@ -17,26 +21,31 @@
 // pieces.at.UFR is the 3D piece currently at the UFR position
 // piece.UFR.sticker_locations == 'LFU' means the U sticker is on the L side, the F sticker on F, and R sticker on U
 //
-var Pieces3D = (function() {
+export const Pieces3D = function () {
   let TINY = undefined;
   let NAMES = undefined;
-  Pieces3D = class Pieces3D {
+  let Pieces3D = class Pieces3D {
+    use_canvas: any;
+    at: {};
+    cube_surfaces: boolean[];
+    sticker_size: number;
+    hover_size: number;
     static initClass() {
       TINY = 0.0030;
-      NAMES = ['B','BL','BR','D','DB','DBL','DBR','DF','DFL','DFR','DL','DR','F','FL','FR','L','R','U','UB','UBL','UBR','UF','UFL','UFR','UL','UR'];
+      NAMES = ['B', 'BL', 'BR', 'D', 'DB', 'DBL', 'DBR', 'DF', 'DFL', 'DFR', 'DL', 'DR', 'F', 'FL', 'FR', 'L', 'R', 'U', 'UB', 'UBL', 'UBR', 'UF', 'UFL', 'UFR', 'UL', 'UR'];
     }
 
     constructor(scene, hover, colors, use_canvas) {
       this.use_canvas = use_canvas;
       this.at = {};
       this.cube_surfaces = this.use_canvas ? [true] : [true, false];
-      this.sticker_size  = this.use_canvas ? 0.84 : 0.90;
-      this.hover_size    = this.use_canvas ? 0.91 : 0.97;
+      this.sticker_size = this.use_canvas ? 0.84 : 0.90;
+      this.hover_size = this.use_canvas ? 0.91 : 0.97;
       this.make_surfaces(scene, hover, colors);
     }
 
     on(layer) {
-      return (Array.from(layer.positions).map((position) => this.at[position]));
+      return (layer.positions.map((position) => this.at[position]));
     }
 
     move(layer, turns) {
@@ -51,7 +60,7 @@ var Pieces3D = (function() {
         side_for[this.at[center].name] = center;
       }
 
-      for (let position_name of Array.from(NAMES)) {
+      for (let position_name of NAMES) {
         const iterable = this.at[position_name].name.split('');
         for (let index = 0; index < iterable.length; index++) {
           const sticker_color = iterable[index];
@@ -65,15 +74,15 @@ var Pieces3D = (function() {
 
     state() {
       const result = [];
-      for (let name of Array.from(NAMES)) {
+      for (let name of NAMES) {
         result.push(`${name}: ${this.at[name].name} -> ${this.at[name].sticker_locations.join('')}`);
       }
       return result.join("\n");
     }
 
     _track_stickers(layer, turns) {
-      return Array.from(this.on(layer)).map((piece) =>
-        (piece.sticker_locations = (Array.from(piece.sticker_locations).map((item) => layer.shift(item, turns)))));
+      return this.on(layer).map((piece) =>
+        (piece.sticker_locations = (piece.sticker_locations.map((item) => layer.shift(item, turns)))));
     }
 
     _track_pieces(turns, cycle1, cycle2) {
@@ -90,7 +99,7 @@ var Pieces3D = (function() {
     reset() {
       return (() => {
         const result = [];
-        for (let name of Array.from(NAMES)) {
+        for (let name of NAMES) {
           const piece = this[name];
 
           this.at[name] = piece;
@@ -140,33 +149,33 @@ var Pieces3D = (function() {
       const new_piece = new THREE.Object3D();
       new_piece.name = standardize_name(x_side.name + y_side.name + z_side.name);
       new_piece.sticker_locations = new_piece.name.split('');
-      new_piece.middle = v3(2*x_side.normal.x, 2*y_side.normal.y, 2*z_side.normal.z);
+      new_piece.middle = v3(2 * x_side.normal.x, 2 * y_side.normal.y, 2 * z_side.normal.z);
       return new_piece;
     }
 
     _add_sticker(side, piece_3d, sticker) {
-      const [dx, dy] = Array.from(this._offsets(side.normal, this.sticker_size, false));
-      piece_3d.add(this._diamond(this._square_center(side, piece_3d.middle, 1+TINY), dx, dy, sticker.color));
+      const [dx, dy] = this._offsets(side.normal, this.sticker_size, false);
+      piece_3d.add(this._diamond(this._square_center(side, piece_3d.middle, 1 + TINY), dx, dy, sticker.color));
 
       if (sticker.x_color) {
-        return this._add_X(side, piece_3d, sticker.x_color, 1+(2*TINY), true);
+        return this._add_X(side, piece_3d, sticker.x_color, 1 + (2 * TINY), true);
       }
     }
 
     _add_hover_sticker(side, piece_3d, sticker, hover) {
-      const [dx, dy] = Array.from(this._offsets(side.normal, this.hover_size, true));
+      const [dx, dy] = this._offsets(side.normal, this.hover_size, true);
       piece_3d.add(this._diamond(this._square_center(side, piece_3d.middle, hover), dx, dy, sticker.color));
 
       if (sticker.x_color) {
-        return this._add_X(side, piece_3d, sticker.x_color, hover-TINY, false);
+        return this._add_X(side, piece_3d, sticker.x_color, hover - TINY, false);
       }
     }
 
     _add_cubeside(side, piece_3d, color) {
       return (() => {
         const result = [];
-        for (let reversed of Array.from(this.cube_surfaces)) {
-          const [dx, dy] = Array.from(this._offsets(side.normal, 1.0, reversed));
+        for (let reversed of this.cube_surfaces) {
+          const [dx, dy] = this._offsets(side.normal, 1.0, reversed);
           result.push(piece_3d.add(this._diamond(this._square_center(side, piece_3d.middle, 1), dx, dy, color)));
         }
         return result;
@@ -197,7 +206,7 @@ var Pieces3D = (function() {
       geo.computeFaceNormals();
       geo.computeBoundingSphere();
 
-      return new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color, overdraw: 0.8}));
+      return new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color, overdraw: 0.8 }));
     }
 
     _offsets(axis1, sticker_size, reversed) {
@@ -212,4 +221,4 @@ var Pieces3D = (function() {
   };
   Pieces3D.initClass();
   return Pieces3D;
-})();
+}();

@@ -8,14 +8,28 @@
 //= require Alg
 //= require Colors
 
+import { Colors } from "./Colors";
+import { log_error } from "./utils";
+import { Alg } from './moves/Alg'
+
 let ALG, ALGDISPLAY, BASE, COLORED, COLORS, FLAGS, HOVER, POV, SETUPMOVES, SOLVED, SPEED, TWEAKS;
-class Config {
+export class Config {
+  raw_input: {};
+  base: Config | { raw(): void; };
+  alg: any;
+  algdisplay: {};
+  colors: any;
+  flags: any;
+  hover: any;
+  pov: any;
+  setup: any;
+  speed: any;
   constructor(config_string) {
     this.raw_input = Config._parse(config_string);
     this.base = this.base_config(this.raw_input[BASE], config_string);
 
     this.alg = this.raw(ALG);
-    this.algdisplay= this._alg_display();
+    this.algdisplay = this._alg_display();
     this.colors = new Colors(Alg.pov_from(this.alg), this.raw(COLORED), this.raw(SOLVED), this.raw(TWEAKS), this.raw(COLORS));
     this.flags = this.raw(FLAGS);
     this.hover = this._hover();
@@ -28,8 +42,7 @@ class Config {
     return this.flags.indexOf(name) > -1;
   }
 
-  raw(name, default_value) {
-    if (default_value == null) { default_value = ""; }
+  raw(name, default_value: string | number = "") {
     return this.raw_input[name] || this.base.raw(name) || default_value;
   }
 
@@ -44,7 +57,7 @@ class Config {
       base_string = null;
     }
 
-    if (base_string) { return new Config(base_string); } else { return { raw() {} }; }
+    if (base_string) { return new Config(base_string); } else { return { raw() { } }; }
   }
 
   _hover() {
@@ -60,10 +73,11 @@ class Config {
 
   _alg_display() {
     const ad = this.raw(ALGDISPLAY);
-    const result = {};
-    result.fancy2s = ad.indexOf('fancy2s') > -1;
-    result.rotations = ad.indexOf('rotations') > -1;
-    result.Zcode = "2";
+    const result = {
+      fancy2s: ad.indexOf('fancy2s') > -1,
+      rotations: ad.indexOf('rotations') > -1,
+      Zcode: "2",
+    };
     if (ad.indexOf('2p') > -1) { result.Zcode = "2'"; }
     if (ad.indexOf('Z') > -1) { result.Zcode = "Z"; }
     return result;
@@ -73,10 +87,10 @@ class Config {
     if (!config_string) { return {}; }
 
     const result = {};
-    for (let conf of Array.from(config_string.split("|"))) {
+    for (let conf of config_string.split("|")) {
       const eq_pos = conf.indexOf("=");
       const key = conf.substring(0, eq_pos).trim();
-      const value = conf.substring(eq_pos+1).trim();
+      const value = conf.substring(eq_pos + 1).trim();
       result[key] = value;
 
       if (PROPERTIES.indexOf(key) === -1) {

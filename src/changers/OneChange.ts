@@ -4,7 +4,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 // Does a single immediate change
-class OneChange {
+export class OneChange {
   action: any;
   constructor(action) {
     this.action = action;
