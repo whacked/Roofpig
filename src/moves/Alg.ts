@@ -10,6 +10,7 @@
 //= require AlgAnimation
 
 import { AlgAnimation } from "../changers/AlgAnimation";
+import { PovTracker } from "../PovTracker";
 import { Move } from "./Move";
 
 export class Alg {
@@ -127,7 +128,6 @@ export class Alg {
 
   // Translate "hand" moves to BRDFLU
   unhand() {
-    // @ts-ignore
     const pov = new PovTracker();
     const result = [];
     for (let move of Array.from(this.moves)) {
@@ -138,7 +138,6 @@ export class Alg {
   }
 
   static pov_from(move_codes) {
-    // @ts-ignore
     return new PovTracker(new Alg(move_codes).moves);
   }
 
