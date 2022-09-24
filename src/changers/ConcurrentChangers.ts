@@ -4,7 +4,11 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class ConcurrentChangers {
+
+
+type FIXME_Changer = any
+export class ConcurrentChangers {
+  sub_changers: FIXME_Changer[];
   constructor(sub_changers) {
     this.sub_changers = sub_changers;
   }
@@ -26,3 +30,5 @@ class ConcurrentChangers {
     return true;
   }
 }
+
+window['ConcurrentChangers'] = ConcurrentChangers

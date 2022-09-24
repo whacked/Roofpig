@@ -8,7 +8,7 @@
 
 import { TimedChanger } from "./TimedChanger";
 
-class CameraMovement extends TimedChanger {
+export class CameraMovement extends TimedChanger {
   camera: any;
   angle_to_turn: number;
   axis: any;

@@ -11,24 +11,28 @@
  */
 // Move utility functions
 
-var Move = (function() {
+import { Layer } from "../Layer";
+import { CompositeMove } from "./CompositeMove";
+import { SingleMove } from "./SingleMove";
+
+export const Move = (function () {
   let turn_code_pairs = undefined;
   let HUMAN_NAMES = undefined;
-  Move = class Move {
+  let Move = class Move {
     static initClass() {
-  
-      turn_code_pairs = {'-2': ['Z', '2'], '-1': ["'", ''], 1: ['', "'"], 2: ['2', 'Z']};
-  
+
+      turn_code_pairs = { '-2': ['Z', '2'], '-1': ["'", ''], 1: ['', "'"], 2: ['2', 'Z'] };
+
       HUMAN_NAMES = {
         "F2+S2+BZ": "z2",
-        "F+S+B'":   "z",
-        "F'+S'+B":  "z'",
+        "F+S+B'": "z",
+        "F'+S'+B": "z'",
         "U2+EZ+DZ": "y2",
-        "U+E'+D'":  "y",
-        "U'+E+D":   "y'",
+        "U+E'+D'": "y",
+        "U'+E+D": "y'",
         "R2+MZ+LZ": "x2",
-        "R+M'+L'":  "x",
-        "R'+M+L":   "x'",
+        "R+M'+L'": "x",
+        "R'+M+L": "x'",
       };
     }
     static make(code, world3d, speed) {
@@ -38,11 +42,13 @@ var Move = (function() {
 
       } else if (['x', 'y', 'z'].includes(code[0])) {
         [t1, t2] = Array.from(turn_code_pairs[Move.parse_turns(code.substring(1))]);
-        moves = (() => { switch (code[0]) {
-          case 'x': return `R${t1}+M${t2}+L${t2}`;
-          case 'y': return `U${t1}+E${t2}+D${t2}`;
-          case 'z': return `F${t1}+S${t1}+B${t2}`;
-        } })();
+        moves = (() => {
+          switch (code[0]) {
+            case 'x': return `R${t1}+M${t2}+L${t2}`;
+            case 'y': return `U${t1}+E${t2}+D${t2}`;
+            case 'z': return `F${t1}+S${t1}+B${t2}`;
+          }
+        })();
         return new CompositeMove(moves, world3d, speed, code);
 
       } else {
@@ -51,14 +57,16 @@ var Move = (function() {
         if (['u', 'd', 'l', 'r', 'f', 'b'].includes(code[0])) { last_char_index = 1; }
         if (last_char_index) {
           [t1, t2] = Array.from(turn_code_pairs[Move.parse_turns(code.substring(last_char_index))]);
-          moves = (() => { switch (code[0].toUpperCase()) {
-            case 'R': return `R${t1}+M${t2}`;
-            case 'L': return `L${t1}+M${t1}`;
-            case 'U': return `U${t1}+E${t2}`;
-            case 'D': return `D${t1}+E${t1}`;
-            case 'F': return `F${t1}+S${t1}`;
-            case 'B': return `B${t1}+S${t2}`;
-          } })();
+          moves = (() => {
+            switch (code[0].toUpperCase()) {
+              case 'R': return `R${t1}+M${t2}`;
+              case 'L': return `L${t1}+M${t1}`;
+              case 'U': return `U${t1}+E${t2}`;
+              case 'D': return `D${t1}+E${t1}`;
+              case 'F': return `F${t1}+S${t1}`;
+              case 'B': return `B${t1}+S${t2}`;
+            }
+          })();
           return new CompositeMove(moves, world3d, speed, code);
 
         } else {
@@ -81,16 +89,16 @@ var Move = (function() {
 
     static parse_turns(turn_code) {
       switch (turn_code) {
-        case "1":  case "": case ">": return 1;
-        case "2": case "²":case ">>": return 2;
+        case "1": case "": case ">": return 1;
+        case "2": case "²": case ">>": return 2;
         case "3": case "'": case "<": return -1;
-        case "Z":case "2'":case "<<": return -2;
+        case "Z": case "2'": case "<<": return -2;
       }
     }
 
     static turn_code(turns, rotation) {
       if (rotation == null) { rotation = false; }
-      return { true: { 1: '>', 2: '>>', '-1': '<', '-2': '<<'}, false: { 1: '', 2: '2', '-1': "'", '-2': 'Z'}}[rotation][turns];
+      return { true: { 1: '>', 2: '>>', '-1': '<', '-2': '<<' }, false: { 1: '', 2: '2', '-1': "'", '-2': 'Z' } }[rotation][turns];
     }
 
     static displayify(move_text, algdisplay) {
@@ -106,3 +114,5 @@ var Move = (function() {
   Move.initClass();
   return Move;
 })();
+
+window['Move'] = Move

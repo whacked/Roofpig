@@ -1,9 +1,14 @@
+import { Alg } from "../moves/Alg";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class AlgAnimation {
+export class AlgAnimation {
+  alg: Alg;
+  _finished: boolean;
+  move_changer: any;
   constructor(alg) {
     this.alg = alg;
     this._next_alg_move();
@@ -19,8 +24,8 @@ class AlgAnimation {
     return this.move_changer.update(now);
   }
 
-  finish() {}
-    // API creep
+  finish() { }
+  // API creep
 
   finished() {
     return this._finished;

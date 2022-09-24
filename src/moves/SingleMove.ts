@@ -10,13 +10,27 @@
 //= require CameraMovement
 //= require MoveExecution
 
-class SingleMove {
+import { CameraMovement } from "../changers/CameraMovement";
+import { MoveExecution } from "../changers/MoveExecution";
+import { Layer } from "../Layer";
+import { Move } from "./Move";
+
+
+
+
+export class SingleMove {
+  world3d: any;
+  speed: number;
+  layer: any;
+  turns: any;
+  is_rotation: boolean;
+  turn_time: number;
   constructor(code, world3d, speed) {
     this.world3d = world3d;
     if (speed == null) { speed = 400; }
     this.speed = speed;
     [this.layer, this.turns, this.is_rotation] = Array.from(Move.parse_code(code));
-    this.turn_time = (this.speed/2) * (1 + Math.abs(this.turns));
+    this.turn_time = (this.speed / 2) * (1 + Math.abs(this.turns));
   }
 
   do() {
@@ -43,7 +57,7 @@ class SingleMove {
             const result1 = [];
             for (let i = 0; i <= 3; i++) {
               if (location === cycle[i]) {
-                result1.push(pov_map[side] = cycle[((i-this.turns)+4)% 4]);
+                result1.push(pov_map[side] = cycle[((i - this.turns) + 4) % 4]);
               } else {
                 result1.push(undefined);
               }
@@ -58,7 +72,7 @@ class SingleMove {
   as_brdflu() {
     if (this.is_rotation) { return ''; }
 
-    const standard_turn_codes = { 1: '', 2: '2', '-1': "'", '-2': '2'};
+    const standard_turn_codes = { 1: '', 2: '2', '-1': "'", '-2': '2' };
     const t1 = standard_turn_codes[this.turns];
     const t2 = standard_turn_codes[-this.turns];
 
@@ -75,15 +89,15 @@ class SingleMove {
   }
 
   show_undo() {
-    return this._do( -this.turns, true);
+    return this._do(-this.turns, true);
   }
 
   _do(do_turns, animate) {
     if (this.is_rotation) {
-      return new CameraMovement(this.world3d.camera, this.layer.normal, (do_turns * Math.PI)/2, this.turn_time, animate);
+      return new CameraMovement(this.world3d.camera, this.layer.normal, (do_turns * Math.PI) / 2, this.turn_time, animate);
     } else {
       this.world3d.pieces.move(this.layer, do_turns);
-      return new MoveExecution(this.world3d.pieces.on(this.layer), this.layer.normal, (do_turns * -Math.PI)/2, this.turn_time, animate);
+      return new MoveExecution(this.world3d.pieces.on(this.layer), this.layer.normal, (do_turns * -Math.PI) / 2, this.turn_time, animate);
     }
   }
 

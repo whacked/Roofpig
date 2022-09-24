@@ -15,7 +15,7 @@ import { TimedChanger } from "./TimedChanger";
 const THREE = window['THREE']
 
 
-class MoveExecution extends TimedChanger {
+export class MoveExecution extends TimedChanger {
   pieces: any[];
   axis: any;
   angle_to_turn: number;

@@ -9,7 +9,7 @@
 
 import { v3 } from "./utils";
 
-window['Layer'] = (function () {
+export const Layer = (function () {
   let all = undefined;
   let sides = undefined;
   var Layer = class Layer {
@@ -87,3 +87,5 @@ window['Layer'] = (function () {
   Layer.initClass();
   return Layer;
 })();
+
+window['Layer'] = Layer

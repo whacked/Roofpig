@@ -7,7 +7,13 @@
 //= require SingleMove
 //= require ConcurrentChangers
 
-class CompositeMove {
+import { ConcurrentChangers } from "../changers/ConcurrentChangers";
+import { Move } from "./Move";
+import { SingleMove } from "./SingleMove";
+
+export class CompositeMove {
+  official_text: any;
+  moves: SingleMove[];
   constructor(move_codes, world3d, speed, official_text = null) {
     this.official_text = official_text;
     this.moves = (Array.from(move_codes.split('+')).map((code) => new SingleMove(code, world3d, speed)));
@@ -21,11 +27,11 @@ class CompositeMove {
   }
 
 
-  do() { return new ConcurrentChangers( (this.moves.map(move => move.do())) ); }
-  undo() { return new ConcurrentChangers( (this.moves.map(move => move.undo())) ); }
-  mix() { return new ConcurrentChangers( (this.moves.map(move => move.mix())) ); }
-  show_do() { return new ConcurrentChangers( (this.moves.map(move => move.show_do())) ); }
-  show_undo() { return new ConcurrentChangers( (this.moves.map(move => move.show_undo())) ); }
+  do() { return new ConcurrentChangers((this.moves.map(move => move.do()))); }
+  undo() { return new ConcurrentChangers((this.moves.map(move => move.undo()))); }
+  mix() { return new ConcurrentChangers((this.moves.map(move => move.mix()))); }
+  show_do() { return new ConcurrentChangers((this.moves.map(move => move.show_do()))); }
+  show_undo() { return new ConcurrentChangers((this.moves.map(move => move.show_undo()))); }
 
   track_pov(pov_map) {
     return Array.from(this.moves).map((move) => move.track_pov(pov_map));

@@ -5,6 +5,7 @@
  */
 // Does a single immediate change
 class OneChange {
+  action: any;
   constructor(action) {
     this.action = action;
   }
@@ -13,7 +14,7 @@ class OneChange {
     return this.action();
   }
 
-  finish() {}
+  finish() { }
 
   finished() {
     return true;

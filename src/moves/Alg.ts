@@ -9,15 +9,27 @@
 //= require Move
 //= require AlgAnimation
 
-class Alg {
-  constructor(move_codes, world3d, algdisplay, speed, dom) {
+import { AlgAnimation } from "../changers/AlgAnimation";
+import { Move } from "./Move";
+
+export class Alg {
+  move_codes: any;
+  world3d: any;
+  algdisplay: any;
+  speed: any;
+  dom: any;
+  moves: any[];
+  next: number;
+  playing: boolean;
+
+  constructor(move_codes, world3d?, algdisplay?, speed?, dom?) {
     this.move_codes = move_codes;
     this.world3d = world3d;
     this.algdisplay = algdisplay;
     this.speed = speed;
     this.dom = dom;
     this.moves = [];
-    for (let code of Array.from(this.move_codes.split(' '))) {
+    for (let code of this.move_codes.split(' ')) {
       if (code.length > 0) {
         this.moves.push(Move.make(code, this.world3d, this.speed));
       }
@@ -32,7 +44,7 @@ class Alg {
       this.next += 1;
       if (this.at_end()) { this.playing = false; }
       this._update_dom();
-      return this.moves[this.next-1];
+      return this.moves[this.next - 1];
     }
   }
 
@@ -84,7 +96,7 @@ class Alg {
   }
 
   mix() {
-    this.next =  this.moves.length;
+    this.next = this.moves.length;
     return (() => {
       const result = [];
       while (!this.at_start()) {
@@ -110,11 +122,12 @@ class Alg {
         active.push(text);
       }
     }
-    return { past: past.join(' '), future: future.join(' ')};
+    return { past: past.join(' '), future: future.join(' ') };
   }
 
   // Translate "hand" moves to BRDFLU
   unhand() {
+    // @ts-ignore
     const pov = new PovTracker();
     const result = [];
     for (let move of Array.from(this.moves)) {
@@ -125,10 +138,11 @@ class Alg {
   }
 
   static pov_from(move_codes) {
+    // @ts-ignore
     return new PovTracker(new Alg(move_codes).moves);
   }
 
-  _update_dom(time) {
+  _update_dom(time?) {
     if (time == null) { time = 'later'; }
     if (this.dom && (this.moves.length > 0)) {
       if (time === 'first time') {
@@ -151,3 +165,5 @@ class Alg {
     return `${current}/${total}`;
   }
 }
+
+window['Alg'] = Alg
