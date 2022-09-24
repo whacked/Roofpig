@@ -4,6 +4,7 @@ var gulp   = require('gulp');
 var gutil  = require('gulp-util');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
+var ts     = require('gulp-typescript');
 
 var dateFormat = require('dateformat');
 var del        = require('del');
@@ -16,7 +17,15 @@ var rp_js_file = 'roofpig.js';
 var extras_file = '3extras.js';
 var release_file = 'roofpig_and_three.min.js';
 
+var tsProject = ts.createProject("tsconfig.json")
+
 // ------------- BUILD -----
+
+gulp.task('default', function() {
+  return tsProject.src().pipe(tsProject())
+    .js
+    .pipe(gulp.dest(build_dir));
+});
 
 gulp.task('clean-build', function() {
   return del(build_dir +'**/*');
