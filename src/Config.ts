@@ -42,14 +42,27 @@ export interface AlgDisplay {
   Zcode: "2" | "2'" | "Z",
 }
 
+enum AlgDisplayFlags {
+  fancy2s = 'fancy2s',
+  rotations = 'rotations',
+  '2p' = '2p',
+  Z = 'Z',
+}
+
+export enum HoverProperty {
+  NEAR = 'near',
+  FAR = 'far',
+  NONE = 'none',
+}
+
 export class Config {
   raw_input: ConfigRecord;
   base: Config | { raw(): void; };
   alg: any;
-  algdisplay: {};
+  algdisplay: AlgDisplay;
   colors: Colors;
   flags: string;
-  hover: any;
+  hover: number;
   pov: any;
   setup: any;
   speed: any;
@@ -77,7 +90,7 @@ export class Config {
     return this.flags.indexOf(name) > -1;
   }
 
-  raw(name: ConfigProperty, default_value: string | number = "") {
+  raw<T = string>(name: ConfigProperty, default_value: string | number = ""): T {
     return this.raw_input[name] || this.base.raw(name) || default_value;
   }
 
@@ -95,12 +108,12 @@ export class Config {
     if (base_string) { return new Config(base_string); } else { return { raw() { } }; }
   }
 
-  _hover() {
-    const raw_hover = this.raw(ConfigProperty.HOVER, "near");
+  _hover(): number {
+    const raw_hover = this.raw<HoverProperty>(ConfigProperty.HOVER, HoverProperty.NEAR);
     switch (raw_hover) {
-      case 'none': return 1.0;
-      case 'near': return 2.0;
-      case 'far': return 7.1;
+      case HoverProperty.NONE: return 1.0;
+      case HoverProperty.NEAR: return 2.0;
+      case HoverProperty.FAR: return 7.1;
       default:
         return raw_hover;
     }
@@ -109,12 +122,12 @@ export class Config {
   _alg_display(): AlgDisplay {
     const ad = this.raw(ConfigProperty.ALGDISPLAY);
     const result: AlgDisplay = {
-      fancy2s: ad.indexOf('fancy2s') > -1,
-      rotations: ad.indexOf('rotations') > -1,
+      fancy2s: ad.indexOf(AlgDisplayFlags.fancy2s) > -1,
+      rotations: ad.indexOf(AlgDisplayFlags.rotations) > -1,
       Zcode: "2",
     };
-    if (ad.indexOf('2p') > -1) { result.Zcode = "2'"; }
-    if (ad.indexOf('Z') > -1) { result.Zcode = "Z"; }
+    if (ad.indexOf(AlgDisplayFlags['2p']) > -1) { result.Zcode = "2'"; }
+    if (ad.indexOf(AlgDisplayFlags.Z) > -1) { result.Zcode = "Z"; }
     return result;
   }
 
